@@ -11,5 +11,5 @@ for reading in root.find('GlucoseReadings'):
 	print reading.get('DisplayTime'), reading.get('Value')
 	time.sleep(1)
 	payload = {'value': float(reading.get('Value'))}
-	requests.post("http://wotkit.sensetecnic.com/api/sensors/mike.blood-sensor/data", auth=('mike', 'aMUSEment2'), data=payload)
+	requests.post("http://wotkit.sensetecnic.com/api/sensors/mike.blood-sensor/data", auth=('b781be7908b3787b', 'f5bde2beb22a0653'), data=payload)
 
