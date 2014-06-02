@@ -1,0 +1,1 @@
+Main directory for the design team - create subdirectories as you like!
