@@ -54,19 +54,21 @@ class Dexcom(object):
 
       if (start_date == datetime.datetime.min):
           for rec in dex.ReadRecords('EGV_DATA'):
-              glucose = ET.SubElement(glucoseReadings,"Glucose")
-              glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
-              glucose.set("InternalTime", str(rec.system_time))
-              glucose.set("DisplayTime", str(rec.display_time))
-              glucose.set("Value", str(rec.glucose * 0.0555))
+              if (rec.glucose > 5):
+                  glucose = ET.SubElement(glucoseReadings,"Glucose")
+                  glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
+                  glucose.set("InternalTime", str(rec.system_time))
+                  glucose.set("DisplayTime", str(rec.display_time))
+                  glucose.set("Value", str(rec.glucose * 0.0555))
 
       else:
           for rec in dex.ReadRecordsAfterDate('EGV_DATA', start_date):
-              glucose = ET.SubElement(glucoseReadings,"Glucose")
-              glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
-              glucose.set("InternalTime", str(rec.system_time))
-              glucose.set("DisplayTime", str(rec.display_time))
-              glucose.set("Value", str(rec.glucose * 0.0555))
+              if (rec.glucose > 5):
+                  glucose = ET.SubElement(glucoseReadings,"Glucose")
+                  glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
+                  glucose.set("InternalTime", str(rec.system_time))
+                  glucose.set("DisplayTime", str(rec.display_time))
+                  glucose.set("Value", str(rec.glucose * 0.0555))
       tree = ET.ElementTree(root)
       return tree;
 
