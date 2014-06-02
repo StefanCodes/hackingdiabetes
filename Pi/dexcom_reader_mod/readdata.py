@@ -58,7 +58,10 @@ class Dexcom(object):
       print 'And here''s some records:'
 
       for rec in dex.ReadRecords('EGV_DATA'):
-          print "Record: " + str(rec.glucose)
+          print "display_time: " + str(rec.display_time)
+          print "system_time: " + str(rec.system_time)
+          print "glucose: " + str(rec.glucose)
+
 
   def __init__(self, port):
     self._port_name = port
