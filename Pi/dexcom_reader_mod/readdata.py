@@ -13,7 +13,6 @@ import util
 import xml.etree.ElementTree as ET
 import numpy
 import platform
-from lxml import etree
 
 class ReadPacket(object):
   def __init__(self, command, data):
@@ -286,7 +285,7 @@ class Dexcom(object):
     records = []
     assert record_type in constants.RECORD_TYPES
     page_range = self.ReadDatabasePageRange(record_type)
-    for x in range(page_range[0], page_range[1] or 1):
+    for x in range(page_range[0], page_range[1] + 1 or 1):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
 

@@ -8,6 +8,7 @@ import sys
 def sendData(readings, lastTime):
 	'''assumes this is a list of readings with a DisplayTime and Value
 	attribute.  Assume DisplayTime is current time zone'''
+
 	for reading in readings:
 		timestamp_str = reading.get('DisplayTime')
 		dt = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
@@ -18,7 +19,7 @@ def sendData(readings, lastTime):
 		# send the data to the wotkit if its new
 		if timestamp > lastTime:
 			print "sending data"
-			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/mike.blood-sensor/data", auth=('b781be7908b3787b', 'f5bde2beb22a0653'), data=payload)
+			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data", auth=('b781be7908b3787b', 'f5bde2beb22a0653'), data=payload)
 			print r.status_code
 			f = open('last-time.txt', 'w+')
 			f.write(str(timestamp)+'\n')
@@ -27,6 +28,7 @@ def sendData(readings, lastTime):
 			print "skipping - old data"
 
 if __name__ == "__main__":
+
 	filename = sys.argv[1]
 	tree = ET.parse(filename)
 	root = tree.getroot()
