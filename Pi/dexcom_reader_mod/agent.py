@@ -2,7 +2,7 @@
 import xml.etree.ElementTree as ET
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import calendar
 import sys
 from readdata import Dexcom
