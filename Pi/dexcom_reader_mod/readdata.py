@@ -4,9 +4,9 @@ import constants
 import database_records
 import datetime
 import serial
-import sys
 import time
 import packetwriter
+import sys
 import struct
 import re
 import util
@@ -36,48 +36,59 @@ class Dexcom(object):
                                constants.DEXCOM_G4_USB_PRODUCT)
 
   @classmethod
-  def LocateAndDownload(cls):
+  def LocateAndDownload(cls, start_date):
     device = cls.FindDevice()
     if not device:
       sys.stderr.write('Could not find Dexcom G4 Receiver!\n')
       sys.exit(1)
     else:
       dex = cls(device)
-#      print ('Found %s S/N: %s'
-#             % (dex.GetFirmwareHeader().get('ProductName'),
-#                dex.ReadManufacturingData().get('SerialNumber')))
-#      print 'Transmitter paired: %s' % dex.ReadTransmitterId()
-#      print 'Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
-#                                           dex.ReadBatteryLevel())
-#      print 'Record count:'
-#      print '- Meter records: %d' % (len(dex.ReadRecords('METER_DATA')))
-#      print '- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA')))
-#      print ('- CGM committable records: %d'
-#             % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
-#      print '- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA')))
-#      print '- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME')))
+      tree = cls.ExportLatestXml(dex, start_date)
+      tree.write("output.xml")
 
+
+# Exports all data since start_date to XML. Caller must write to file.
+  def ExportLatestXml(dex, start_date):
       root = ET.Element("Patient")
       root.set("SerialNumber", dex.ReadManufacturingData().get('SerialNumber'))
       glucoseReadings = ET.SubElement(root,"GlucoseReadings")
 
-      start_date = datetime.datetime.now() - datetime.timedelta(minutes=30)
-      for rec in dex.ReadRecordsAfterDate('EGV_DATA', start_date):
-          glucose = ET.SubElement(glucoseReadings,"Glucose")
-          glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
-          glucose.set("InternalTime", str(rec.system_time))
-          glucose.set("DisplayTime", str(rec.display_time))
-          glucose.set("Value", str(rec.glucose * 0.0555))
+      if (start_date == datetime.datetime.min):
+          for rec in dex.ReadRecords('EGV_DATA'):
+              glucose = ET.SubElement(glucoseReadings,"Glucose")
+              glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
+              glucose.set("InternalTime", str(rec.system_time))
+              glucose.set("DisplayTime", str(rec.display_time))
+              glucose.set("Value", str(rec.glucose * 0.0555))
+
+      else:
+          for rec in dex.ReadRecordsAfterDate('EGV_DATA', start_date):
+              glucose = ET.SubElement(glucoseReadings,"Glucose")
+              glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
+              glucose.set("InternalTime", str(rec.system_time))
+              glucose.set("DisplayTime", str(rec.display_time))
+              glucose.set("Value", str(rec.glucose * 0.0555))
       tree = ET.ElementTree(root)
-      tree.write("output.xml")
+      return tree;
 
   def ReadRecordsAfterDate(self, record_type, start_date):
       print 'Requesting records after ' + str(start_date)
       records = []
       assert record_type in constants.RECORD_TYPES
       page_range = self.ReadDatabasePageRange(record_type)
-      for x in range(page_range[0], page_range[1] or 1):
-        records.extend(self.ReadDatabasePage(record_type, x))
+
+      start_page = 0
+      for x in range(page_range[1], page_range[0], -1):
+        page = self.ReadDatabasePage(record_type, x)
+        if next(page).display_time < start_date:
+            start_page = x
+            break
+
+      for page_num in range(start_page, (page_range[1]+1)):
+        for row in self.ReadDatabasePage(record_type, page_num):
+            if row.display_time >= start_date:
+                records.append(row)
+
       return records
 
 
@@ -280,4 +291,8 @@ class Dexcom(object):
     return records
 
 if __name__ == '__main__':
-  Dexcom.LocateAndDownload()
+    if (len(sys.argv) == 1):
+        start_date = datetime.datetime.min
+    else:
+        start_date = datetime.datetime.now() - datetime.timedelta(minutes=int(sys.argv[1]))
+    Dexcom.LocateAndDownload(start_date)
