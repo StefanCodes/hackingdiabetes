@@ -1,3 +1,4 @@
+import calendar
 import crc16
 import constants
 import database_records
@@ -42,12 +43,12 @@ class Dexcom(object):
       sys.exit(1)
     else:
       dex = cls(device)
-      print ('Found %s S/N: %s'
-             % (dex.GetFirmwareHeader().get('ProductName'),
-                dex.ReadManufacturingData().get('SerialNumber')))
+#      print ('Found %s S/N: %s'
+#             % (dex.GetFirmwareHeader().get('ProductName'),
+#                dex.ReadManufacturingData().get('SerialNumber')))
 #      print 'Transmitter paired: %s' % dex.ReadTransmitterId()
-      print 'Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
-                                           dex.ReadBatteryLevel())
+#      print 'Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
+#                                           dex.ReadBatteryLevel())
 #      print 'Record count:'
 #      print '- Meter records: %d' % (len(dex.ReadRecords('METER_DATA')))
 #      print '- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA')))
@@ -55,12 +56,29 @@ class Dexcom(object):
 #             % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
 #      print '- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA')))
 #      print '- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME')))
-      print 'And here''s some records:'
 
-      for rec in dex.ReadRecords('EGV_DATA'):
-          print "display_time: " + str(rec.display_time)
-          print "system_time: " + str(rec.system_time)
-          print "glucose: " + str(rec.glucose)
+      root = ET.Element("Patient")
+      root.set("SerialNumber", dex.ReadManufacturingData().get('SerialNumber'))
+      glucoseReadings = ET.SubElement(root,"GlucoseReadings")
+
+      start_date = datetime.datetime.now() - datetime.timedelta(minutes=30)
+      for rec in dex.ReadRecordsAfterDate('EGV_DATA', start_date):
+          glucose = ET.SubElement(glucoseReadings,"Glucose")
+          glucose.set("EpochTime", str(calendar.timegm(rec.system_time.utctimetuple())))
+          glucose.set("InternalTime", str(rec.system_time))
+          glucose.set("DisplayTime", str(rec.display_time))
+          glucose.set("Value", str(rec.glucose * 0.0555))
+      tree = ET.ElementTree(root)
+      tree.write("output.xml")
+
+  def ReadRecordsAfterDate(self, record_type, start_date):
+      print 'Requesting records after ' + str(start_date)
+      records = []
+      assert record_type in constants.RECORD_TYPES
+      page_range = self.ReadDatabasePageRange(record_type)
+      for x in range(page_range[0], page_range[1] or 1):
+        records.extend(self.ReadDatabasePage(record_type, x))
+      return records
 
 
   def __init__(self, port):
@@ -260,7 +278,6 @@ class Dexcom(object):
     for x in range(page_range[0], page_range[1] or 1):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
-
 
 if __name__ == '__main__':
   Dexcom.LocateAndDownload()
