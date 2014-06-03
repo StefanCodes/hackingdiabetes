@@ -44,6 +44,7 @@ class Dexcom(object):
       dex = cls(device)
       tree = cls.ExportLatestXml(dex, start_date)
       tree.write("output.xml")
+      dex.Disconnect()
 
 
 # Exports all data since start_date to XML. Caller must write to file.
@@ -52,7 +53,7 @@ class Dexcom(object):
       root.set("SerialNumber", dex.ReadManufacturingData().get('SerialNumber'))
       glucoseReadings = ET.SubElement(root,"GlucoseReadings")
 
-      if (start_date == datetime.min):
+      if (start_date == datetime.datetime.min):
           for rec in dex.ReadRecords('EGV_DATA'):
               if (rec.glucose > 5):
                   glucose = ET.SubElement(glucoseReadings,"Glucose")
