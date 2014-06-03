@@ -56,7 +56,7 @@
 
         /* Draw Chart */
         function drawChart() {
-            var x = [['Date', 'Reading (mmol/L)', 'Lower Limit', 'Upper Limit']];
+            var x = [['Date', 'Reading (mmol/L)', 'Lower Limit = 4.5', 'Upper Limit = 7.5']];
             
             $.getJSON(hours, function (data) {
                 $.each(data, function (key, data) {
