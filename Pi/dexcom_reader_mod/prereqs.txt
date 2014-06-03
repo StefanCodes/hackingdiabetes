@@ -1,7 +1,7 @@
 Needs:
 
-Dexcom Studio (USB driver)
-Python 2.7
-Python Serial lib
+Dexcom Studio (USB driver) * only necessary for Windows
+Python 2.7 runtime
+PySerial lib
 NumPy Lib
 PyTz lib
