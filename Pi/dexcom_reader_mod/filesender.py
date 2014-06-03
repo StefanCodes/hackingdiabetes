@@ -36,23 +36,30 @@ def senddata(readings, lastTime):
 		if timestamp > lastTime:
 			prediction = Glucose_Predictor(value)
 
-			payload = {'msg':(prediction[0], prediction[2]), 'timestamp':timestamp*1000, 'value': float(reading.get('Value'))}
+			payload = {'timestamp':timestamp*1000, 'value': float(reading.get('Value'))}
 			print payload
 
 			if (prediction[0] == 1):
-				send_alerts('#rising')
+				#send_alerts('#rising')
 				print 'sent rising alert'
 			elif (prediction[0] == -1):
-				send_alerts('#falling')
+				#send_alerts('#falling')
 				print 'sent falling alert'
 
 			#send info to wotkit
 			print "sending data"
-			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
-			print r.status_code
+			#r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
+			gluc_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose-test2/data", auth=('hackathon', 'HHVan2014'), data=payload)
+			print gluc_data_r.status_code
 			f = open('last-time.txt', 'w+')
+			predictions = {'deviation':float(prediction[0]), 'time_to_go':float(prediction[2])}
+			print predictions
+			#r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction", auth=('hackathon', 'HHVan2014'), data=predictions)
+			pred_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction-test/data", auth=('hackathon', 'HHVan2014'), data=predictions)
+			print pred_data_r.status_code
 			f.write(str(timestamp)+'\n')
 			f.close()
+
 		else:
 			print "skipping - old data"
 
