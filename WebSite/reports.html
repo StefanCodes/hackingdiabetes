@@ -8,20 +8,22 @@
       <script type="text/javascript">
 
         //3 6 12 24 wk
-        var hours3 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=36000000";   //3 hours
-        var hours6 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=46800000";    //6 hours
-        var hours12 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=68400000";  //12 hours
-        var hours24 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=111600000";  //24 hours
-		var hoursWeek = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=781200000"; // one week
+        var hours3 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=10800000";   //3 hours
+        var hours6 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=21600000";    //6 hours
+        var hours12 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=43200000";  //12 hours
+        var hours24 = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?before=86400000";  //24 hours
 
         var hours = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?beforeE=144"; //default time interval;
 
-        google.load("visualization", "1", {packages:["corechart"]});
-        google.load("visualization", "1", {packages:["gauge"]});
-        google.setOnLoadCallback(drawChart);
-        google.setOnLoadCallback(drawGaugeChart);
 
-        /* Draw gauge */
+
+        google.load("visualization", "1", {packages:["corechart"]});
+        //google.load("visualization", "1", {packages:["gauge"]});
+        google.setOnLoadCallback(drawChart);
+        //google.setOnLoadCallback(drawGaugeChart);
+
+        /*
+
         function drawGaugeChart() {
       		var redFrom = 30;
       		var redTo = 10;
@@ -47,6 +49,7 @@
   			chart.draw(chartData, options);
           });
         }
+        */
 
 
 
@@ -59,6 +62,7 @@
                 $.each(data, function (key, data) {
                     var node = [new Date(data.timestamp_iso), data.value, 4.5, 7.5];
                     x.push(node);
+                    document.getElementById('currentValue').innerHTML = 'Current Glucose Level: ' + node[1];
                 });
 
                 var data = google.visualization.arrayToDataTable(x);
@@ -108,11 +112,6 @@
           hours = hours24;
           drawChart();
         }
-		
-		function oneWeek(){
-		  hours = hoursWeek;
-		  drawChart();
-		}
       </script>
   </head>
   <body>
@@ -122,10 +121,11 @@
       <button type="button" onclick="sixHours()">6h</button>
       <button type="button" onclick="twelveHours()">12h</button>
       <button type="button" onclick="twentyFourHours()">24h</button>
-      <button type="button" onclick="oneWeek()">Week</button>
+
+      <p id="currentValue"></p>
 
       <div id="chart_div" style="width: 1300px; height: 700px;"></div>
-      <div id="gauge_div" style="width: 500px; height: 500px;"></div>
+      <!--div id="gauge_div" style="width: 500px; height: 500px;"></div-->
 
       
 
