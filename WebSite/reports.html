@@ -60,7 +60,7 @@
             
             $.getJSON(hours, function (data) {
                 $.each(data, function (key, data) {
-                    var node = [new Date(data.timestamp_iso), data.value, 4.5, 7.5];
+                    var node = [new Date(data.timestamp_iso), Math.round( data.value * 10) / 10 , 4.5, 7.5];
                     x.push(node);
                     document.getElementById('currentValue').innerHTML = 'Current Glucose Level: ' + node[1];
                 });
