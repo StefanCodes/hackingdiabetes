@@ -63,7 +63,7 @@ def osx_find_usbserial(vendor, product):
 
 # smohr: this obviously needs to iterate over available COM ports
 def windows_find_usbserial(vendor, product):
-    return "\\.\COM6"
+    return "\\.\COM4"
 
 def find_usbserial(vendor, product):
   """Find the tty device for a given usbserial devices identifiers.

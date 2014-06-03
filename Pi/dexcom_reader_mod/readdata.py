@@ -292,8 +292,14 @@ class Dexcom(object):
     return records
 
 if __name__ == '__main__':
-    if (len(sys.argv) == 1):
-        start_date = datetime.datetime.min
-    else:
-        start_date = datetime.datetime.now() - datetime.timedelta(minutes=int(sys.argv[1]))
+    f = open('last-time.txt', 'r+')
+    lastTime = int(f.readline())
+    f.close()
+
+    start_date = datetime.datetime.fromtimestamp(lastTime)
+
+    # if a parameter is included, it represents the MINUTES to subtract from the start date
+    # A value of 10 means that data will be grabbed since 10 minutes before lastTime
+    if (len(sys.argv) == 2):
+        start_date = start_date - datetime.timedelta(minutes=int(sys.argv[1]))
     Dexcom.LocateAndDownload(start_date)
