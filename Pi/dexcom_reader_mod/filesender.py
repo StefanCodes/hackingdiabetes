@@ -40,10 +40,10 @@ def senddata(readings, lastTime):
 			print payload
 
 			if (prediction[0] == 1):
-				#send_alerts('#rising')
+				send_alerts('#rising')
 				print 'sent rising alert'
 			elif (prediction[0] == -1):
-				#send_alerts('#falling')
+				send_alerts('#falling')
 				print 'sent falling alert'
 
 			#send info to wotkit
