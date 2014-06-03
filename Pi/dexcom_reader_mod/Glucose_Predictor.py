@@ -87,4 +87,5 @@ def Glucose_Predictor(value):
                                 else:
                                         msg_threshold = -1
 
+
         return msg_fast_deviating, msg_threshold, int(time_to_go)

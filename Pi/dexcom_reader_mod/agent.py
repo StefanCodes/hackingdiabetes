@@ -45,9 +45,12 @@ if __name__ == '__main__':
         if (offsetMins >= 0 and start_date != datetime.datetime.min):
             start_date = start_date - datetime.timedelta(minutes=offsetMins)
 
-        print "Fetching data from Dexcom via USB."
-        Dexcom.LocateAndDownload(start_date)
-        print "Fetch finished."
+        if filename == 'live.xml':
+            print "Fetching data from Dexcom via USB."
+            Dexcom.LocateAndDownload(start_date)
+            print "Fetch finished."
+        else:
+            print "In simulator mode. Sample data being read from " + filename
 
         tree = ET.parse(filename)
         root = tree.getroot()
