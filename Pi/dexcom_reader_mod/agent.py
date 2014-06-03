@@ -53,6 +53,6 @@ if __name__ == '__main__':
         root = tree.getroot()
 
         print "Pushing data to web service..."
-        senddata(root.find('GlucoseReadings'), filename, lastTime)
+        senddata(root.find('GlucoseReadings'), filename)
         print 'Done. Going to sleep for 1 minute. zzz'
         time.sleep(60)
