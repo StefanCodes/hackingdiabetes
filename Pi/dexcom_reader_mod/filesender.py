@@ -33,8 +33,6 @@ def senddata(readings, lastTime):
 		timestamp=calendar.timegm(utc_dt.utctimetuple())
 		value = float(reading.get('Value'))
 		# send the data to the wotkit if its new, and send alerts if needed
-		print "Timestamp: " + str(timestamp)
-		print "LastTime: " + str(lastTime)
 		if timestamp > lastTime:
 			prediction = Glucose_Predictor(value)
 

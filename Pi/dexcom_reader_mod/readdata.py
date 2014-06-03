@@ -50,6 +50,7 @@ class Dexcom(object):
 
 
 # Exports all data since start_date to XML. Caller must write to file.
+# This largely emulates the XML exported by Dexcom Studio
   def ExportLatestXml(dex, start_date):
       root = ET.Element("Patient")
       root.set("SerialNumber", dex.ReadManufacturingData().get('SerialNumber'))
@@ -74,27 +75,6 @@ class Dexcom(object):
                   glucose.set("Value", str(rec.glucose * 0.0555))
       tree = ET.ElementTree(root)
       return tree;
-
-  def ReadRecordsAfterDate(self, record_type, start_date):
-      print 'Requesting records after ' + str(start_date)
-      records = []
-      assert record_type in constants.RECORD_TYPES
-      page_range = self.ReadDatabasePageRange(record_type)
-
-      start_page = 0
-      for x in range(page_range[1], page_range[0], -1):
-        page = self.ReadDatabasePage(record_type, x)
-        if next(page).display_time < start_date:
-            start_page = x
-            break
-
-      for page_num in range(start_page, (page_range[1]+1)):
-        for row in self.ReadDatabasePage(record_type, page_num):
-            if row.display_time >= start_date:
-                records.append(row)
-
-      return records
-
 
   def __init__(self, port):
     self._port_name = port
@@ -286,6 +266,8 @@ class Dexcom(object):
       raise NotImplementedError('Parsing of %s has not yet been implemented'
                                 % record_type)
 
+# Reads all records available on the Dexcom device
+# Can be slow! Processing 8000 records takes approximately 10 seconds on a modern PC. 90 seconds on a 500MHz ARM CPU (Raspberry Pi)
   def ReadRecords(self, record_type):
     records = []
     assert record_type in constants.RECORD_TYPES
@@ -293,6 +275,27 @@ class Dexcom(object):
     for x in range(page_range[0], page_range[1] + 1 or 1):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
+
+# Reads all records available on the Dexcom after the specified (Dexcom) system time
+  def ReadRecordsAfterDate(self, record_type, start_date):
+      print 'Requesting records after ' + str(start_date)
+      records = []
+      assert record_type in constants.RECORD_TYPES
+      page_range = self.ReadDatabasePageRange(record_type)
+
+      start_page = 0
+      for x in range(page_range[1], page_range[0], -1):
+        page = self.ReadDatabasePage(record_type, x)
+        if next(page).display_time < start_date:
+            start_page = x
+            break
+
+      for page_num in range(start_page, (page_range[1]+1)):
+        for row in self.ReadDatabasePage(record_type, page_num):
+            if row.display_time >= start_date:
+                records.append(row)
+
+      return records
 
 if __name__ == '__main__':
     f = open('last-time.txt', 'r+')
