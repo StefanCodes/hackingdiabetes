@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript">
+
+
+        
+$( document ).ready(function drawChart(){
+
+    var hours = "http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data?beforeE=36";   //3 hours
+    var x = [];
+
+        $.getJSON(hours, function (data) {
+            $.each(data, function (key, data) {
+                var node = [Date.parse(data.timestamp_iso), Math.round( data.value * 10) / 10];
+                x.push(node);
+                
+            });
+        
+
+        
+    $('#container').highcharts({
+        chart: {
+            backgroundColor: {
+                linearGradient: [500, 500, 500, 0],
+                stops: [
+                    [0, '#2c2c2d'],
+                    [1, '#262626']
+                ]
+            },
+            type: 'scatter',
+            zoomType: 'x',
+            style: {
+                fontFamily: '"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+                fontSize: '20px'
+            }
+,
+        },
+        title: {
+            text: ''
+        },
+        credits: {
+            enabled: false,
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            title: {
+                text: 'Time'
+            },
+            type: 'datetime',
+            tickInterval: 900000,
+            lineColor: '#5e5e61',
+            gridLineColor: '#5e5e61',
+
+        },
+        yAxis: {
+            title: {
+                text: 'Glucose Level (mmol/L)'
+            },
+            max: 15,
+            min: 0,
+            plotLines: [{
+                dashStyle: 'ShortDash',
+                color: '#ff00ff',
+                width: 1,
+                value: 5.6,
+                zIndex: 4,   
+            },
+            {
+                color: '#fff568',
+                dashStyle: 'ShortDash',
+                width: 1,
+                value: 12,
+                zIndex:4,
+            }],
+            lineColor: '#5e5e61',
+            gridLineColor: '#5e5e61',
+            lineWidth: 1,
+        },
+        legend: {
+            enabled: false,
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 3,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: '#5e5e61'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x} cm, {point.y} kg'
+                }
+            }
+        },
+        series: [{
+            name: '',
+            color: 'rgba(43, 138, 137, 1)',
+            data:  x 
+        }]
+    });
+
+});
+}
+);
+    
+
+		</script>
+	</head>
+	<body>
+<!--script src="../../js/highcharts.js"></script-->
+<!--script src="../../js/modules/exporting.js"></script-->
+
+<script src="highcharts.js"></script>
+<script src="exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
+
+	</body>
+</html>

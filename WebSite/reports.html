@@ -1,24 +1,31 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Hacking Diabetes</title>
+    <style>
+        body
+        {
+            font-family: Calibri, Verdana, sans-serif;
+        }
+    </style>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
         var lowerLimit = 4.5;
         var upperLimit = 7.5;
 
-        var webServiceBaseURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data";
+        var glucoseWebServiceBaseURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data";
 
         //1 reading every 5 mins -> 12 readings per hour
-        var hours3 = webServiceBaseURL + "?beforeE=36";      //3 hours
-        var hours6 = webServiceBaseURL + "?beforeE=72";       //6 hours
-        var hours12 = webServiceBaseURL + "?beforeE=144";    //12 hours
-        var hours24 = webServiceBaseURL + "?beforeE=288";    //24 hours
+        var hours3 = glucoseWebServiceBaseURL + "?beforeE=36";      //3 hours
+        var hours6 = glucoseWebServiceBaseURL + "?beforeE=72";       //6 hours
+        var hours12 = glucoseWebServiceBaseURL + "?beforeE=144";    //12 hours
+        var hours24 = glucoseWebServiceBaseURL + "?beforeE=288";    //24 hours
 
         var hours = hours24; //default to 24 hours;
-                
+
+        var lastPredictionURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction-test/data?beforeE=1";
+           
         google.load("visualization", "1", { packages: ["corechart"] });
         google.setOnLoadCallback(drawChart);
                
@@ -27,10 +34,12 @@
             var x = [['Date', 'Reading (mmol/L)', 'Lower Limit = ' + lowerLimit, 'Upper Limit = ' + upperLimit]];
 
             $.getJSON(hours, function (data) {
+                var currGlucose;
+
                 $.each(data, function (key, data) {
                     var node = [new Date(data.timestamp_iso), Math.round(data.value * 10) / 10, lowerLimit, upperLimit];
                     x.push(node);
-                    document.getElementById('currentValue').innerHTML = 'Current Glucose Level: ' + node[1];
+                    currGlucose = node[1];
                 });
 
                 var data = google.visualization.arrayToDataTable(x);
@@ -59,7 +68,36 @@
 
                 var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
                 chart.draw(data, options);
+
+                var colour = "black";
+                if (currGlucose > upperLimit) {
+                    colour = "orange";
+                }
+                else if (currGlucose < lowerLimit) {
+                    colour = "red";
+                }
+                $("#currentValue")
+                    .css("color", colour)
+                    .html("Current Glucose Level: " + currGlucose);
             });
+
+            $.getJSON(lastPredictionURL, function (data) {
+                var deviation = "n/a";
+                if (data[0].deviation == 0) {
+                    deviation = "no rapid change";
+                }
+                else if (data[0].deviation == -1) {
+                    deviation = "rapidly falling";
+                }
+                else if (data[0].deviation == 1) {
+                    deviation = "rising rapidly";
+                }
+                
+                document.getElementById('deviationMsg').innerHTML = 'Deviation: ' + deviation;
+                document.getElementById('timeToGoMsg').innerHTML = 'Time until threshold: ' + data[0].time_to_go;
+            });
+
+            document.getElementById('timestamp').innerHTML = 'Last Refreshed: ' + new Date($.now());
 
             setTimeout(drawChart, 2000);
         }
@@ -83,12 +121,14 @@
     </script>
 </head>
 <body>
-
+    <p id="currentValue"></p>
+    <p id="deviationMsg"></p>
+    <p id="timeToGoMsg"></p>
     <button type="button" onclick="threeHours()">3h</button>
     <button type="button" onclick="sixHours()">6h</button>
     <button type="button" onclick="twelveHours()">12h</button>
     <button type="button" onclick="twentyFourHours()">24h</button>
-    <p id="currentValue"></p>
     <div id="chart_div" style="width: 1300px; height: 700px;"></div>
+    <p id="timestamp" style="font-size: smaller;"></p>
 </body>
 </html>
