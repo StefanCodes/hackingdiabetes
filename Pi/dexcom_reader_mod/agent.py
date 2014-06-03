@@ -15,16 +15,22 @@ if __name__ == '__main__':
     else:
         start_date = datetime.now() - timedelta(minutes=int(sys.argv[1]))
     
-    Dexcom.LocateAndDownload(start_date)
-    filename = 'output.xml'
-    tree = ET.parse(filename)
-    root = tree.getroot()
-    lastTime = 0
-    
-    #try:
-    f = open('last-time.txt', 'r+')
-    lastTime = int(f.readline())
-    f.close()
-	#except:
-	#	pass #do nothing
-    senddata(root.find('GlucoseReadings'), lastTime)
+
+    while 1:
+        print "getting data from device"
+        Dexcom.LocateAndDownload(start_date)
+
+        filename = 'output.xml'
+        tree = ET.parse(filename)
+        root = tree.getroot()
+        lastTime = 0
+
+        try:
+            f = open('last-time.txt', 'r+')
+            lastTime = int(f.readline())
+            f.close()
+        except:
+            pass #do nothing
+        senddata(root.find('GlucoseReadings'), lastTime)
+        print 'waiting'
+        time.sleep(60)
