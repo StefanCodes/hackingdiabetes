@@ -1,3 +1,12 @@
+
+'''
+Sends reading data to Wotkit in format {'msg':(fast_deviating, time_to_go), 'timestamp':int, 'value':int}
+See Glucose_Predictor for 'msg' value details.
+
+Also sends a text and iOS alert if glucose levels are rising or falling too fast
+
+'''
+
 import xml.etree.ElementTree as ET
 import time
 import requests
@@ -5,7 +14,8 @@ from datetime import datetime
 import calendar
 import sys
 import pytz, datetime
-
+from Glucose_Predictor import Glucose_Predictor
+from send_alerts import send_alerts
 
 
 def senddata(readings, lastTime):
@@ -22,12 +32,23 @@ def senddata(readings, lastTime):
 
 		timestamp=calendar.timegm(utc_dt.utctimetuple())
 		value = float(reading.get('Value'))
-		payload = {'timestamp':timestamp*1000, 'value': float(reading.get('Value'))}
-		print payload
-		# send the data to the wotkit if its new
+		# send the data to the wotkit if its new, and send alerts if needed
 		if timestamp > lastTime:
+			prediction = Glucose_Predictor(value)
+
+			payload = {'msg':(prediction[0], prediction[2]), 'timestamp':timestamp*1000, 'value': float(reading.get('Value'))}
+			print payload
+
+			if (prediction[0] == 1):
+				send_alerts('#rising')
+				print 'sent rising alert'
+			elif (prediction[0] == -1):
+				send_alerts('#falling')
+				print 'sent falling alert'
+
+			#send info to wotkit
 			print "sending data"
-			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data", auth=('b781be7908b3787b', 'f5bde2beb22a0653'), data=payload)
+			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
 			print r.status_code
 			f = open('last-time.txt', 'w+')
 			f.write(str(timestamp)+'\n')
@@ -48,8 +69,4 @@ if __name__ == "__main__":
 	except:
 		pass #do nothing
 
-	sendData(root.find('GlucoseReadings'), lastTime)
-
-
-
-
+	senddata(root.find('GlucoseReadings'), lastTime)

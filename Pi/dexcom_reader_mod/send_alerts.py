@@ -4,15 +4,15 @@ TO IfThisThenThat WHEN TRIGGERED"""
 import smtplib
 from email.mime.text import MIMEText
 
-def send_alerts():
+def send_alerts(sub):
 	#CONSTANTS
 	#Change for your own use
 	USER_EMAIL = 'HHVanTeam4@gmail.com'
 	USERNAME = 'HHVanTeam4'
 	PASSWORD = 'ThisIsSparta!'
 	TRIGGER_EMAIL = 'trigger@ifttt.com'
-	SUBJECT = '#alert'
-	CONTENT = '**DEXCOM ALERT**'
+	SUBJECT = sub
+	CONTENT = ''
 
 	#Construct RFC 2822 message
 	msg = MIMEText(CONTENT)

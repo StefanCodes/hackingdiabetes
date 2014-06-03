@@ -53,10 +53,12 @@ def Glucose_Predictor(value):
                 __std_counter += 1
                 if __std_counter == std_counter_max:
                         msg_fast_deviating = 1
+                        __std_counter = 0
         elif (mean - value) < std_coef* std:
                 __std_counter += 1
                 if __std_counter == std_counter_max:
                         msg_fast_deviating = -1
+                        __std_counter = 0
         else:
                 __std_counter = 0
 
@@ -89,5 +91,5 @@ def Glucose_Predictor(value):
                                 else:
                                         msg_threshold = -1
 
-        return msg_fast_deviating, msg_threshold, time_to_go
+        return msg_fast_deviating, msg_threshold, int(time_to_go)
 
