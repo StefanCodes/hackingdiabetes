@@ -39,5 +39,5 @@ if __name__ == '__main__':
 
         print "Pushing data to web service..."
         senddata(root.find('GlucoseReadings'), lastTime)
-        print 'Done. Waiting for next sample.'
+        print 'Done. Going to sleep for 1 minute. zzz'
         time.sleep(60)
