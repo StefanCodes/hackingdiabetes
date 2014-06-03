@@ -27,8 +27,8 @@ USER_EMAIL = 'HHVanTeam4@gmail.com' to USER_EMAIL = 'derp@gmail.com'
 
 ** This project relies on If This Then That to send out iOS notifications and text messages as alerts. If you do not already have an account, go to https://ifttt.com, create an account, and create two recipes: one for email to SMS, and one for email to iOS. Note that this project currently only works with G-Mail e-mail addresses!
 
-*** Make sure to have python 2.7 installed.
-If you need to install python, run the command 'apt-get install python2.7'
+*** Make sure to have python 2.7 installed. If you need to install python, run the command 'apt-get install python2.7'
+
 --------------
 
 
