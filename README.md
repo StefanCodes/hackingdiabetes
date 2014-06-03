@@ -5,6 +5,7 @@ Compatible with: Dexcom G4 and Raspberry Pi/Linux (Debian/Ubuntu Distros)
 
 
 To install and run:
+
 1. Connect Dexcom G4 Receiver to computer
 
 2. Open up the command line
