@@ -15,7 +15,7 @@ def senddata(readings, lastTime):
 	for reading in readings:
 		timestamp_str = reading.get('DisplayTime')
 
-		local_tz = pytz.timezone ("America/Los_Angeles")
+		local_tz = pytz.timezone ("US/Pacific")
 		naive_dt = datetime.datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
 		local_dt = local_tz.localize(naive_dt)
 		utc_dt = local_dt.astimezone (pytz.utc)
@@ -31,7 +31,7 @@ def senddata(readings, lastTime):
 			print r.status_code
 			f = open('last-time.txt', 'w+')
 			f.write(str(timestamp)+'\n')
-			f.close()	
+			f.close()
 		else:
 			print "skipping - old data"
 

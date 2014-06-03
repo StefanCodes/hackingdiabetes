@@ -45,7 +45,7 @@ class Dexcom(object):
     else:
       dex = cls(device)
       tree = cls.ExportLatestXml(dex, start_date)
-      tree.write("output.xml")
+      tree.write("live.xml")
       dex.Disconnect()
 
 
