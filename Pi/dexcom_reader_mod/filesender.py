@@ -48,14 +48,14 @@ def senddata(readings, lastTime):
 
 			#send info to wotkit
 			print "sending data"
-			#r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
-			gluc_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose-test2/data", auth=('hackathon', 'HHVan2014'), data=payload)
+			gluc_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
+			#gluc_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose-test2/data", auth=('hackathon', 'HHVan2014'), data=payload)
 			print gluc_data_r.status_code
 			f = open('last-time.txt', 'w+')
 			predictions = {'deviation':float(prediction[0]), 'time_to_go':float(prediction[2])}
 			print predictions
-			#r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction", auth=('hackathon', 'HHVan2014'), data=predictions)
-			pred_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction-test/data", auth=('hackathon', 'HHVan2014'), data=predictions)
+			pred_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction/data", auth=('hackathon', 'HHVan2014'), data=predictions)
+			#pred_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction-test/data", auth=('hackathon', 'HHVan2014'), data=predictions)
 			print pred_data_r.status_code
 			f.write(str(timestamp)+'\n')
 			f.close()
