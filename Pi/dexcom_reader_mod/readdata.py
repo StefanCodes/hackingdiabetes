@@ -52,7 +52,7 @@ class Dexcom(object):
       root.set("SerialNumber", dex.ReadManufacturingData().get('SerialNumber'))
       glucoseReadings = ET.SubElement(root,"GlucoseReadings")
 
-      if (start_date == datetime.datetime.min):
+      if (start_date == datetime.min):
           for rec in dex.ReadRecords('EGV_DATA'):
               if (rec.glucose > 5):
                   glucose = ET.SubElement(glucoseReadings,"Glucose")
@@ -292,8 +292,18 @@ class Dexcom(object):
     return records
 
 if __name__ == '__main__':
-    if (len(sys.argv) == 1):
-        start_date = datetime.datetime.min
+    f = open('last-time.txt', 'r+')
+    lastTime = int(f.readline())
+    f.close()
+
+    if (lastTime > 0):
+        start_date = datetime.datetime.fromtimestamp(lastTime)
     else:
-        start_date = datetime.datetime.now() - datetime.timedelta(minutes=int(sys.argv[1]))
+        start_date = datetime.datetime.min;
+
+    # if a parameter is included, it represents the MINUTES to subtract from the start date
+    # A value of 10 means that data will be grabbed since 10 minutes before lastTime
+    if (len(sys.argv) == 2 and start_date != datetime.datetime.min):
+        start_date = start_date - datetime.timedelta(minutes=int(sys.argv[1]))
+
     Dexcom.LocateAndDownload(start_date)
