@@ -4,6 +4,9 @@ import requests
 from datetime import datetime
 import calendar
 import sys
+import pytz, datetime
+
+
 
 def senddata(readings, lastTime):
 	'''assumes this is a list of readings with a DisplayTime and Value
@@ -11,8 +14,13 @@ def senddata(readings, lastTime):
 
 	for reading in readings:
 		timestamp_str = reading.get('DisplayTime')
-		dt = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-		timestamp=calendar.timegm(dt.utctimetuple())
+
+		local_tz = pytz.timezone ("America/Los_Angeles")
+		naive_dt = datetime.datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+		local_dt = local_tz.localize(naive)
+		utc_dt = local_dt.astimezone (pytz.utc)
+
+		timestamp=calendar.timegm(utc_dt.utctimetuple())
 		value = float(reading.get('Value'))
 		payload = {'timestamp':timestamp*1000, 'value': float(reading.get('Value'))}
 		print payload
