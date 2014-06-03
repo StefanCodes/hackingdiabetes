@@ -10,6 +10,17 @@
             color: white;
             background: linear-gradient(#262626, #2c2c2d);
         }
+        #threshold{
+            float: right;
+            margin-right: 270px
+        }
+        #upper{
+            color: #FF3D3D;
+        }
+        #lower{
+            color: #FF3D3D;
+        }
+
     </style>
 
 
@@ -136,13 +147,13 @@
                             min: 0,
                             plotLines: [{
                                 dashStyle: 'ShortDash',
-                                color: '#ff00ff',
+                                color: '#FF3D3D',
                                 width: 1,
                                 value: lowerLimit,
                                 zIndex: 4,
                             },
                             {
-                                color: '#fff568',
+                                color: '#FF3D3D',
                                 dashStyle: 'ShortDash',
                                 width: 1,
                                 value: upperLimit,
@@ -215,6 +226,11 @@
     <script src="js/highcharts.js"></script>
     <script src="js/exporting.js"></script>
 
+    <div id="threshold">
+        <p id="upper">Upper threshold = 7.5</p>
+        <p id="lower">Lower threshold = 4.5</p>
+    </div>
+
     <p id="currentValue"></p>
     <p id="deviationMsg"></p>
     <p id="timeToGoMsg"></p>
@@ -222,7 +238,8 @@
     <button type="button" id="btn6Hours">6h</button>
     <button type="button" id="btn12Hours">12h</button>
     <button type="button" id="btn24Hours">24h</button>
-    <div id="container" style="min-width: 800px; height: 400px; max-width: 1200px; margin: 0 auto"></div>
+
+    <div id="container" style="min-width: 800px; height: 500px; max-width: 1200px; margin: 0 auto"></div>
     <p id="timestamp" style="font-size: smaller;"></p>
 </body>
 </html>
