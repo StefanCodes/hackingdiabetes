@@ -17,7 +17,7 @@ def senddata(readings, lastTime):
 
 		local_tz = pytz.timezone ("America/Los_Angeles")
 		naive_dt = datetime.datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-		local_dt = local_tz.localize(naive)
+		local_dt = local_tz.localize(naive_dt)
 		utc_dt = local_dt.astimezone (pytz.utc)
 
 		timestamp=calendar.timegm(utc_dt.utctimetuple())

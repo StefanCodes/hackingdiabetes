@@ -55,7 +55,7 @@ class Dexcom(object):
       root.set("SerialNumber", dex.ReadManufacturingData().get('SerialNumber'))
       glucoseReadings = ET.SubElement(root,"GlucoseReadings")
 
-      if (start_date == datetime.datetime.min):
+      if (start_date == datetime.min):
           for rec in dex.ReadRecords('EGV_DATA'):
               if (rec.glucose > 5):
                   glucose = ET.SubElement(glucoseReadings,"Glucose")
