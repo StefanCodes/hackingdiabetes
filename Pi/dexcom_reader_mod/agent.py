@@ -29,13 +29,15 @@ if __name__ == '__main__':
         if (len(sys.argv) == 2 and start_date != datetime.datetime.min):
             start_date = start_date - datetime.timedelta(minutes=int(sys.argv[1]))
 
-        print "getting data from device"
+        print "Fetching data from Dexcom via USB."
         Dexcom.LocateAndDownload(start_date)
+        print "Fetch finished."
 
         filename = 'output.xml'
         tree = ET.parse(filename)
         root = tree.getroot()
 
+        print "Pushing data to web service..."
         senddata(root.find('GlucoseReadings'), lastTime)
-        print 'waiting'
+        print 'Done. Waiting for next sample.'
         time.sleep(60)
