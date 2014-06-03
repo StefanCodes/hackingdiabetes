@@ -1,134 +1,228 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hacking Diabetes</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Highcharts Example</title>
     <style>
-        body
-        {
+        body {
             font-family: Calibri, Verdana, sans-serif;
+            color: white;
+            background: linear-gradient(#262626, #2c2c2d);
         }
     </style>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
-        var lowerLimit = 4.5;
-        var upperLimit = 7.5;
+        $(document).ready(function(){
+            var lowerLimit = 4.5;
+            var upperLimit = 7.5;
 
-        var glucoseWebServiceBaseURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data";
+            var glucoseWebServiceBaseURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data";
 
-        //1 reading every 5 mins -> 12 readings per hour
-        var hours3 = glucoseWebServiceBaseURL + "?beforeE=36";      //3 hours
-        var hours6 = glucoseWebServiceBaseURL + "?beforeE=72";       //6 hours
-        var hours12 = glucoseWebServiceBaseURL + "?beforeE=144";    //12 hours
-        var hours24 = glucoseWebServiceBaseURL + "?beforeE=288";    //24 hours
+            //1 reading every 5 mins -> 12 readings per hour
+            var hours3 = glucoseWebServiceBaseURL + "?beforeE=36";      //3 hours
+            var hours6 = glucoseWebServiceBaseURL + "?beforeE=72";       //6 hours
+            var hours12 = glucoseWebServiceBaseURL + "?beforeE=144";    //12 hours
+            var hours24 = glucoseWebServiceBaseURL + "?beforeE=288";    //24 hours
 
-        var hours = hours24; //default to 24 hours;
+            var ticks3 = 1800000;
+            var ticks6 = 3600000;
+            var ticks12 = 10800000;
+            var ticks24 = 14400000;
 
-        var lastPredictionURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction-test/data?beforeE=1";
-           
-        google.load("visualization", "1", { packages: ["corechart"] });
-        google.setOnLoadCallback(drawChart);
-               
-        /* Draw Chart */
-        function drawChart() {
-            var x = [['Date', 'Reading (mmol/L)', 'Lower Limit = ' + lowerLimit, 'Upper Limit = ' + upperLimit]];
+            var hours = hours24; //default to 24 hours;
+            var ticks = ticks24;
 
-            $.getJSON(hours, function (data) {
+            var lastPredictionURL = "http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction/data?beforeE=1";
+
+            drawChart();
+
+            $("#btn3Hours").click(function () {
+                hours = hours3;
+                ticks = ticks3;
+                drawChart();
+            });
+
+            $("#btn6Hours").click(function () {
+                hours = hours6;
+                ticks = ticks6;
+                drawChart();
+            });
+
+            $("#btn12Hours").click(function () {
+                hours = hours12;
+                ticks = ticks12;
+                drawChart();
+            });
+
+            $("#btn24Hours").click(function () {
+                hours = hours24;
+                ticks = ticks24;
+                drawChart();
+            });
+
+            function drawChart() {
+                var x = [];
                 var currGlucose;
 
-                $.each(data, function (key, data) {
-                    var node = [new Date(data.timestamp_iso), Math.round(data.value * 10) / 10, lowerLimit, upperLimit];
-                    x.push(node);
-                    currGlucose = node[1];
+                $.getJSON(hours, function (data) {
+                    $.each(data, function (key, data) {
+                        var node = [Date.parse(data.timestamp_iso), Math.round( data.value * 10) / 10];
+                        x.push(node);
+                        currGlucose = node[1];
+                    });
+
+                    var colour = "white";
+                    if (currGlucose > upperLimit) {
+                        colour = "red";
+                    }
+                    else if (currGlucose < lowerLimit) {
+                        colour = "red";
+                    }
+                    $("#currentValue")
+                        .css("color", colour)
+                        .html("Current Glucose Level: " + currGlucose + " mmol");
+
+                    Highcharts.setOptions({
+                        global: {
+                            useUTC: false
+                        }
+                    });
+
+                    $('#container').highcharts({
+                        chart: {
+                            backgroundColor: {
+                                linearGradient: [500, 500, 500, 0],
+                                stops: [
+                                    [0, '#2c2c2d'],
+                                    [1, '#262626']
+                                ]
+                            },
+                            type: 'scatter',
+                            zoomType: 'x',
+                            style: {
+                                fontFamily: '"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+                                fontSize: '20px'
+                            },
+                        },
+                        title: {
+                            text: ''
+                        },
+                        credits: {
+                            enabled: false,
+                        },
+                        subtitle: {
+                            text: ''
+                        },
+                        xAxis: {
+                            title: {
+                                text: 'Time'
+                            },
+                            type: 'datetime',
+                            tickInterval: ticks,
+                            lineColor: '#5e5e61',
+                            gridLineColor: '#5e5e61',
+
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Glucose Level (mmol/L)'
+                            },
+                            max: 15,
+                            min: 0,
+                            plotLines: [{
+                                dashStyle: 'ShortDash',
+                                color: '#ff00ff',
+                                width: 1,
+                                value: lowerLimit,
+                                zIndex: 4,
+                            },
+                            {
+                                color: '#fff568',
+                                dashStyle: 'ShortDash',
+                                width: 1,
+                                value: upperLimit,
+                                zIndex:4,
+                            }],
+                            lineColor: '#5e5e61',
+                            gridLineColor: '#5e5e61',
+                            lineWidth: 1,
+                        },
+                        legend: {
+                            enabled: false,
+                        },
+                        plotOptions: {
+                            scatter: {
+                                marker: {
+                                    radius: 3,
+                                    states: {
+                                        hover: {
+                                            enabled: true,
+                                            lineColor: '#5e5e61'
+                                        }
+                                    }
+                                },
+                                states: {
+                                    hover: {
+                                        marker: {
+                                            enabled: false
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    headerFormat: '<b>{series.name}</b><br>',
+                                    pointFormat: '{point.x:%H:%M}, {point.y} mmol'
+                                }
+                            }
+                        },
+                        series: [{
+                            name: '',
+                            color: 'rgba(43, 138, 137, 1)',
+                            data: x
+                        }]
+                    });
+
                 });
 
-                var data = google.visualization.arrayToDataTable(x);
+                $.getJSON(lastPredictionURL, function (data) {
+                    var deviation = "n/a";
+                    if (data[0].deviation == 0) {
+                        deviation = "no rapid change";
+                    }
+                    else if (data[0].deviation == -1) {
+                        deviation = "rapidly falling";
+                    }
+                    else if (data[0].deviation == 1) {
+                        deviation = "rising rapidly";
+                    }
 
-                var options = {
-                    title: 'Glucose Level',
+                    document.getElementById('deviationMsg').innerHTML = 'Deviation: ' + deviation;
+                    document.getElementById('timeToGoMsg').innerHTML = 'Time until threshold: ' + data[0].time_to_go + ' min';
+                });
 
-                    //Set the min and max y values
-                    vAxis: {
-                        viewWindow: {
-                            max: 20,
-                            min: 0
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'out'
-                    },
-                    series: {
-                        0: {
-                            lineWidth: 0,
-                            pointSize: 4
-                        }
-                    },
-                };
+                document.getElementById('timestamp').innerHTML = 'Last Refreshed: ' + new Date($.now());
 
-                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                chart.draw(data, options);
-
-                var colour = "black";
-                if (currGlucose > upperLimit) {
-                    colour = "orange";
-                }
-                else if (currGlucose < lowerLimit) {
-                    colour = "red";
-                }
-                $("#currentValue")
-                    .css("color", colour)
-                    .html("Current Glucose Level: " + currGlucose);
-            });
-
-            $.getJSON(lastPredictionURL, function (data) {
-                var deviation = "n/a";
-                if (data[0].deviation == 0) {
-                    deviation = "no rapid change";
-                }
-                else if (data[0].deviation == -1) {
-                    deviation = "rapidly falling";
-                }
-                else if (data[0].deviation == 1) {
-                    deviation = "rising rapidly";
-                }
-                
-                document.getElementById('deviationMsg').innerHTML = 'Deviation: ' + deviation;
-                document.getElementById('timeToGoMsg').innerHTML = 'Time until threshold: ' + data[0].time_to_go;
-            });
-
-            document.getElementById('timestamp').innerHTML = 'Last Refreshed: ' + new Date($.now());
-
-            setTimeout(drawChart, 2000);
-        }
-
-        function threeHours() {
-            hours = hours3;
-            drawChart();
-        }
-        function sixHours() {
-            hours = hours6;
-            drawChart();
-        }
-        function twelveHours() {
-            hours = hours12;
-            drawChart();
-        }
-        function twentyFourHours() {
-            hours = hours24;
-            drawChart();
-        }
+                setTimeout(drawChart, 30000);
+            }
+        });
     </script>
 </head>
 <body>
+    <script src="js/highcharts.js"></script>
+    <script src="js/exporting.js"></script>
+
     <p id="currentValue"></p>
     <p id="deviationMsg"></p>
     <p id="timeToGoMsg"></p>
-    <button type="button" onclick="threeHours()">3h</button>
-    <button type="button" onclick="sixHours()">6h</button>
-    <button type="button" onclick="twelveHours()">12h</button>
-    <button type="button" onclick="twentyFourHours()">24h</button>
-    <div id="chart_div" style="width: 1300px; height: 700px;"></div>
+    <button type="button" id="btn3Hours">3h</button>
+    <button type="button" id="btn6Hours">6h</button>
+    <button type="button" id="btn12Hours">12h</button>
+    <button type="button" id="btn24Hours">24h</button>
+    <div id="container" style="min-width: 800px; height: 400px; max-width: 1200px; margin: 0 auto"></div>
     <p id="timestamp" style="font-size: smaller;"></p>
 </body>
 </html>
