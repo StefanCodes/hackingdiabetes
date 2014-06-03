@@ -14,8 +14,10 @@ os.system('chmod 777 venv')
 os.system('chmod 777 venv/bin/activate')
 os.system('venv/bin/activate')
 
-#install all requirements
+#install all remaining requirements
 os.system('apt-get install python-numpy')
+os.system('apt-get install python-setuptools')
+os.system('easy_install --upgrade pytz')
 os.system('pip install pyserial')
 os.system('pip install requests')
 
