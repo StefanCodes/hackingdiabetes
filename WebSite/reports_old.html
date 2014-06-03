@@ -79,7 +79,7 @@
                 }
                 $("#currentValue")
                     .css("color", colour)
-                    .html("Current Glucose Level: " + currGlucose);
+                    .html("Current Glucose Level: " + currGlucose + " mmol");
             });
 
             $.getJSON(lastPredictionURL, function (data) {
@@ -95,7 +95,7 @@
                 }
                 
                 document.getElementById('deviationMsg').innerHTML = 'Deviation: ' + deviation;
-                document.getElementById('timeToGoMsg').innerHTML = 'Time until threshold: ' + data[0].time_to_go;
+                document.getElementById('timeToGoMsg').innerHTML = 'Time until threshold: ' + data[0].time_to_go + ' min';
             });
 
             document.getElementById('timestamp').innerHTML = 'Last Refreshed: ' + new Date($.now());
