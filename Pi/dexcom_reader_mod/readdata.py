@@ -12,7 +12,9 @@ import util
 import xml.etree.ElementTree as ET
 import numpy
 import platform
+import pytz
 from datetime import datetime,tzinfo,timedelta
+from pytz import timezone
 
 class ReadPacket(object):
   def __init__(self, command, data):
@@ -298,7 +300,9 @@ if __name__ == '__main__':
     f.close()
 
     if (lastTime > 0):
-        start_date = datetime.fromtimestamp(lastTime)
+        local_tz = pytz.timezone ("US/Pacific")
+        start_date = local_tz.localize(datetime.fromtimestamp(lastTime))
+
     else:
         start_date = datetime.min;
 
@@ -306,5 +310,5 @@ if __name__ == '__main__':
     # A value of 10 means that data will be grabbed since 10 minutes before lastTime
     if (len(sys.argv) == 2 and start_date != datetime.min):
         start_date = start_date - timedelta(minutes=int(sys.argv[1]))
-
-    Dexcom.LocateAndDownload(start_date)
+    print start_date
+    #Dexcom.LocateAndDownload(start_date)
