@@ -4,4 +4,4 @@ Dexcom Studio (USB driver)
 Python 2.7
 Python Serial lib
 NumPy Lib
-lxml Lib
+PyTz lib

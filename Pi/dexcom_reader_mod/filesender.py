@@ -48,7 +48,7 @@ def senddata(readings, lastTime):
 
 			#send info to wotkit
 			print "sending data"
-			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/mike.glucose/data", auth=('b781be7908b3787b', 'f5bde2beb22a0653'), data=payload)
+			r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
 			print r.status_code
 			f = open('last-time.txt', 'w+')
 			f.write(str(timestamp)+'\n')
