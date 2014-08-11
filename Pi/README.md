@@ -8,6 +8,9 @@ Compatible with: Dexcom G4 and Raspberry Pi/Linux (Debian/Ubuntu Distros)
 
 
 smohr: This documentation is out of date as the project is being refactored. Stay tuned.
+smohr: At present, a ton of code is just hacked up from the dexcom_reader project on GitHub. As this matures we will
+correctly separate out and credit that module.
+
 --------------
 To install and run:
 
