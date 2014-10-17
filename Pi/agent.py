@@ -16,8 +16,8 @@ def SimulateXmlRecord():
 	root.set("SerialNumber", "AA12345678")
 	glucoseReadings = ET.SubElement(root,"GlucoseReadings")
 	glucose = ET.SubElement(glucoseReadings,"Glucose")
-	glucose.set("InternalTime", str(datetime.datetime.now()))
-	glucose.set("DisplayTime", str(datetime.datetime.now()))
+	glucose.set("InternalTime", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+	glucose.set("DisplayTime", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 	glucose.set("Value", str(random.randint(30,70)/10.0))
 	tree = ET.ElementTree(root)
 	return tree;
@@ -55,4 +55,4 @@ if __name__ == '__main__':
 		print "Pushing data to web service..."
 		senddata(root.find('GlucoseReadings'), lastTime)
 		print 'Done. Going to sleep for 1 minute. zzz'
-		time.sleep(60)
+		time.sleep(2)
