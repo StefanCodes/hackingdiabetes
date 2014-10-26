@@ -1,5 +1,5 @@
 
-
+UPLOAD_TO_WOTKIT = True
 WOTKIT_UPLOAD_INTERVAL = 60
 
 WOTKIT_API_BASE = 'http://wotkit.sensetecnic.com/'
