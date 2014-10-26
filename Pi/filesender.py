@@ -16,11 +16,14 @@ import sys
 import pytz, datetime
 from Glucose_Predictor import Glucose_Predictor
 from send_alerts import send_alerts
+from wotkit import WoTKitClient
 
 
 def senddata(readings, lastTime):
 	'''assumes this is a list of readings with a DisplayTime and Value
 	attribute.  Assume DisplayTime is current time zone'''
+
+	wotkit = WoTKitClient()
 
 	for reading in readings:
 		timestamp_str = reading.get('DisplayTime')
@@ -48,13 +51,14 @@ def senddata(readings, lastTime):
 
 			#send info to wotkit
 			print "sending data"
-			gluc_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose/data", auth=('hackathon', 'HHVan2014'), data=payload)
+			gluc_data_r = wotkit.send_data('glucose', payload)
 			#gluc_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.glucose-test2/data", auth=('hackathon', 'HHVan2014'), data=payload)
 			print gluc_data_r.status_code
 			f = open('last-time.txt', 'w+')
 			predictions = {'deviation':float(prediction[0]), 'time_to_go':float(prediction[2])}
 			print predictions
-			pred_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction/data", auth=('hackathon', 'HHVan2014'), data=predictions)
+
+			pred_data_r = wotkit.send_data('prediction', payload)
 			#pred_data_r = requests.post("http://wotkit.sensetecnic.com/api/sensors/hackathon.prediction-test/data", auth=('hackathon', 'HHVan2014'), data=predictions)
 			print pred_data_r.status_code
 			f.write(str(timestamp)+'\n')

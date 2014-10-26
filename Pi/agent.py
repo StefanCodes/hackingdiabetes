@@ -5,9 +5,14 @@ import datetime
 import calendar
 import sys
 import random
+from settings import *
 from readdata import Dexcom
 from filesender import senddata
 
+# generate galues between 0.30 and 0.70 
+SIM_MIN_VALUE = 30
+SIM_MAX_VALUE = 70
+SIM_DIVISOR = 10
 
 # We intended to use JSON as our interchange format, but there's a lot of prior art using XML
 # so let's burn that bridge later.
@@ -18,7 +23,7 @@ def SimulateXmlRecord():
 	glucose = ET.SubElement(glucoseReadings,"Glucose")
 	glucose.set("InternalTime", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 	glucose.set("DisplayTime", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-	glucose.set("Value", str(random.randint(30,70)/10.0))
+	glucose.set("Value", str(random.randint(SIM_MIN_VALUE,SIM_MAX_VALUE)/SIM_DIVISOR))
 	tree = ET.ElementTree(root)
 	return tree;
 
@@ -54,5 +59,5 @@ if __name__ == '__main__':
 
 		print "Pushing data to web service..."
 		senddata(root.find('GlucoseReadings'), lastTime)
-		print 'Done. Going to sleep for 1 minute. zzz'
-		time.sleep(60)
+		print 'Done. Going to sleep for {0} secs. zzz'.format(WOTKIT_UPLOAD_INTERVAL)
+		time.sleep(WOTKIT_UPLOAD_INTERVAL)
