@@ -8,6 +8,8 @@ import random
 from settings import *
 from readdata import Dexcom
 from filesender import senddata
+from wotkit import WoTKitClient
+import settings
 
 # generate galues between 0.30 and 0.70 
 SIM_MIN_VALUE = 30
@@ -32,6 +34,13 @@ if __name__ == '__main__':
 	inSimulation = 0
 	if (len(sys.argv) > 1 and sys.argv[1] == '-sim'):
 		inSimulation = 1
+
+	# register the sensor if we want to push data to the cloud
+	if settings.UPLOAD_TO_WOTKIT:
+		print 'registering sensor: {0}'.format(WOTKIT_SENSOR_NAME)
+		wotkit = WoTKitClient()
+		response = wotkit.register_sensor()
+		# TODO: check errors - 201 and 409 (already exists are OK)
 
 	while 1:
 		lastTime = 0

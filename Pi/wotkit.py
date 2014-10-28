@@ -1,4 +1,5 @@
 import requests
+import json
 from settings import *
 
 class WoTKitClient(object):
@@ -22,7 +23,10 @@ class WoTKitClient(object):
 
     def register_sensor(self):
         """ register a sensor with the wotkit """
-        # TODO:
-        pass
+        headers = {'content-type': 'application/json'}
+        payload = WOTKIT_SENSOR
 
+        r = requests.post(WOTKIT_API_BASE+'api/sensors', auth=(self.name, self.password),
+            headers=headers, data=json.dumps(payload))
+        return r
 

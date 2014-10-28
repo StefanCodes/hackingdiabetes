@@ -52,7 +52,7 @@ def senddata(readings, lastTime):
 			#send info to wotkit if needed
 			if UPLOAD_TO_WOTKIT:
 				print "sending data"
-				gluc_data_r = wotkit.send_data('glucose', payload)
+				gluc_data_r = wotkit.send_data(WOTKIT_SENSOR_NAME, payload)
 				print gluc_data_r.status_code
 				predictions = {'deviation':float(prediction[0]), 'time_to_go':float(prediction[2])}
 				print predictions
