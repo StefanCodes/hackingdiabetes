@@ -60,6 +60,9 @@ def senddata(readings, lastTime):
 				print pred_data_r.status_code
 			else:
 				print 'wotkit send disabled - skipped wotkit send'
+			if UPLOAD_TO_NODE_RED:
+				print "sending to node red"
+				requests.post('http://localhost:1880/g4sim', data=payload)
 			
 			# update last time
 			f = open('last-time.txt', 'w+')
